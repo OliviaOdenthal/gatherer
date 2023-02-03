@@ -17,11 +17,10 @@ void GatheredData::loadall(
 	const std::filesystem::path camerasamples_fp = 
 		folder / "paths" / "camerasamples.bin";
 
-	LOG(info) << lengths_fp;
-	LOG(info) << positions_fp;
-	LOG(info) << radiance_fp;
-	LOG(info) << camerasamples_fp;
-
+	LOG(lengths_fp.string());
+	LOG(positions_fp.string());
+	LOG(radiance_fp.string());
+	LOG(camerasamples_fp.string());
 
 	std::ifstream lengths_ifs(lengths_fp);
 	std::ifstream positions_ifs(positions_fp);
@@ -57,13 +56,13 @@ void GatheredData::loadall(
 		off += l;
 	}
 
+	LOG("Loaded all paths");
 
 	nlohmann::json json_data;
 	std::ifstream json_file{scenejson};
 	if(!json_file) 
 	{
-		LOG(fatal) <<
-			"Could not open \"" << scenejson.string() << "\"";
+		LOG("Could not open \"" + scenejson.string() + "\"");
 		throw std::runtime_error("Could not open scene file");
 	}
 	json_file >> json_data;

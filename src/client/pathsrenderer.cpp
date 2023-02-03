@@ -7,7 +7,7 @@ void PathsRenderer::init()
 	glGenBuffers(1, &posvboidx);
 	glGenBuffers(1, &ssboidx);
 	glEnableVertexAttribArray(0);
-	LOG(info) << "Created VAO";
+	LOG("Created VAO");
 
 	enablerendering = true;
 	enabledepth = true;
@@ -33,7 +33,7 @@ void PathsRenderer::init()
 		GL_TEXTURE_2D, texid_below, 0
 	);
 	if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-		LOG(error) << "Paths framebuffer is not complete!";
+		LOG("Paths framebuffer is not complete!");
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 

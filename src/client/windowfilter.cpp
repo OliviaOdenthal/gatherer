@@ -154,7 +154,7 @@ void WindowFilter::computepaths(GatheredData& gd)
 		gd.selectedpaths.end()
 	);
 
-	LOG(info) << "Filtered paths (" << newnpaths << " / " << npaths << ")";
+	LOG("Filtered paths (" + std::to_string(newnpaths) + " / " + std::to_string(npaths) + ")");
 }
 
 bool WindowFilter::renderstackui()

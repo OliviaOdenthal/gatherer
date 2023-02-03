@@ -30,7 +30,7 @@ SphereFilter::SphereFilter(Vec3f c, float r)
 	);
 	
 	if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-		LOG(error) << "Framebuffer is not complete!";
+		LOG("Framebuffer is not complete!");
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 	shaprog2_id = disk_load_shader_program(
@@ -218,7 +218,7 @@ void SphereFilter::computepaths(GatheredData& gd)
 
 	gd.selectedpathstmpbuf.clear();
 
-	LOG(info) << "Filtered paths (" << gd.selectedpaths.size() << " / " << npaths << ")";
+	LOG("Filtered paths (" + std::to_string(gd.selectedpaths.size()) + " / " + std::to_string(npaths) + ")");
 }
 
 bool SphereFilter::renderstackui()

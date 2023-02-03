@@ -74,7 +74,7 @@ void truckboom_camera(Vec2f cursor_delta, Camera& camera)
 
 Application::Application()
 {
-	LOG(info) << "Starting application";
+	LOG("Starting application");
 
 	initglfw();
 	createglfwwindow();
@@ -85,8 +85,7 @@ Application::Application()
 	bool error = !glfwCheckErrors();
 	if (error) exit(1);
 
-	LOG(info) << "Created window";
-
+	LOG("Created window");
 	initglew();
 	
 	configureogl();
@@ -120,7 +119,7 @@ Application::Application()
 		GL_TEXTURE_2D, texid_final, 0
 	);
 	if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-		LOG(error) << "Final framebuffer is not complete!";
+		LOG("Final framebuffer is not complete!");
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	finalshaprog_idx = disk_load_shader_program(
 		"../src/client/shaders/screenquad.vert.glsl",
@@ -137,7 +136,7 @@ Application::Application()
 
 Application::~Application()
 {
-	LOG(info) << "Exiting";
+	LOG("Exiting");
 	ImGui_ImplGlfw_Shutdown();
 	ImGui_ImplOpenGL3_Shutdown();
 	ImGui::DestroyContext();
@@ -251,7 +250,7 @@ bool Application::loop()
 									filtermanager.addfilter(ss);
 
 									activefiltertool = ActiveFilterTool::none;
-									LOG(info) << "FILTER";
+									LOG("FILTER");
 								}
 								else if(activefiltertool == ActiveFilterTool::window)
 								{
@@ -300,7 +299,7 @@ bool Application::loop()
 void Application::accountwindowresize()
 {
 	glfwGetFramebufferSize(window, &framesize[0], &framesize[1]);
-	LOG(info) << "Framebuffer size: " << framesize;
+	LOG("Framebuffer size: " + std::to_string(framesize));
 
 	if(sceneloaded)
 	{
@@ -655,12 +654,12 @@ void Application::initglfw()
 	const int glfw_init_status = glfwInit();
 	if(glfw_init_status != GLFW_TRUE)
 	{
-		LOG(error) << "Impossible to init GLFW";
+		LOG("Impossible to init GLFW");
 		exit(1);
 	}
 	else
 	{
-		LOG(info) << "Initialized GLFW";
+		LOG("Initialized GLFW");
 	}
 }
 
@@ -758,14 +757,14 @@ void Application::loaddataset(DataSet& dataset)
 	dataset.isloaded = true;
 	mustrenderviewport = true;
 	//LOG(info) << "!!! dataset loaded";
-	LOG(info) << "Done loading dataset";
+	LOG("Done loading dataset");
 }
 
 void Application::switchdataset()
 {
 	DataSet* other = 
 		currentdataset->id == datasetA.id ? &datasetB : &datasetA;
-	LOG(info) << "Switching from " << currentdataset->id << " to dataset " << other->id;
+	LOG("Switching from " + std::to_string(currentdataset->id) + " to dataset " + std::to_string(other->id));
 	currentdataset = other;
 }
 
@@ -773,5 +772,5 @@ void Application::windowresize(GLFWwindow* window, int width, int height)
 {
 	Application* app = (Application*)glfwGetWindowUserPointer(window);
 	app->accountwindowresize();
-	LOG(info) << "New window size: " << width << ", " << height;
+	LOG(std::string("New window size: ") + std::to_string(width) + ", " + std::to_string(height));
 }
