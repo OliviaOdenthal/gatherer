@@ -1,5 +1,8 @@
 #include "spherefilter.hpp"
 
+#include "imgui_impl_opengl3.h"
+#include "imgui_impl_glfw.h"
+
 SphereFilter::SphereFilter(Vec3f c, float r)
 {
 	filtertypename = "Sphere";

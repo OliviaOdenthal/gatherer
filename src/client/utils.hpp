@@ -1,13 +1,13 @@
 #ifndef _UTILS_HPP_
 #define _UTILS_HPP_
 
-#include <filesystem>
-#include <iostream>
-#include <string>
-
 #define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>
 #include <glad/glad.h>
+
+#include <filesystem>
+#include <iostream>
+#include <string>
 
 #include "math.hpp"
 

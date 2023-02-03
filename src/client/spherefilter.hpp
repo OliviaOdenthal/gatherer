@@ -6,11 +6,7 @@
 #include <set>
 #include <thread>
 
-#include <GL/glew.h>
-#include <GLFW/glfw3.h>
-
-#include "imgui_impl_opengl3.h"
-#include "imgui_impl_glfw.h"
+#include <glad/glad.h>
 
 #include "utils.hpp"
 #include "camera.hpp"

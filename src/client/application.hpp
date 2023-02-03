@@ -1,8 +1,9 @@
 #ifndef _APPLICATION_HPP_
 #define _APPLICATION_HPP_
 
-#include <GL/glew.h>
+#define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>
+#include <glad/glad.h>
 
 #include "axesvisualizer.hpp"
 #include "scenerenderer.hpp"

@@ -1,10 +1,8 @@
 #ifndef _IMAGERENDERER_HPP_
 #define _IMAGERENDERER_HPP_
 
-#include <GL/glew.h>
-#include <GLFW/glfw3.h>
-
 #include "utils.hpp"
+
 #include "gathereddata.hpp"
 
 enum ImageDisplayMode : int

@@ -1,5 +1,8 @@
 #include "filtermanager.hpp"
 
+#include "imgui_impl_opengl3.h"
+#include "imgui_impl_glfw.h"
+
 void FilterManager::render(
 	Camera& cam, 
 	GLuint scenefbo_id, 
