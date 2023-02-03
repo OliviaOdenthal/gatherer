@@ -665,10 +665,16 @@ void Application::initglfw()
 
 void Application::createglfwwindow()
 {
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
+	int gl_major = 4;
+	int gl_minor = 6;
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, gl_major);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, gl_minor);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 	window = glfwCreateWindow(DEF_WINDOW_W, DEF_WINDOW_H, "Gatherer", NULL, NULL);
+	if(!window) {
+		LOG("could not create GLFW window with GL version " + std::to_string(gl_major) + "." + std::to_string(gl_minor));
+		exit(1);
+	}
 	glfwMakeContextCurrent(window);
 
 	glfwSetWindowUserPointer(window, this);
