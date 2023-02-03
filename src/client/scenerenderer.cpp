@@ -1,6 +1,10 @@
 #include "scenerenderer.hpp"
 
-void SceneRenderer::init(const boost::filesystem::path& path, Camera& cam)
+#include "utils.hpp"
+
+#include <fstream>
+
+void SceneRenderer::init(const std::filesystem::path& path, Camera& cam)
 {
 	loadscene(path, cam);
 
@@ -269,16 +273,16 @@ void SceneRenderer::setframesize(Vec2i size)
 
 void SceneRenderer::generateheatmap(GatheredData& gd)
 {
-	boost::filesystem::path heatmappath = gd.datafolder / "heatmap.bin";
+	std::filesystem::path heatmappath = gd.datafolder / "heatmap.bin";
 	const unsigned nuv = numuvsets;
 	std::vector<Vec3f> tex(texres*texres*nuv);
 	LOG(info) << "Allocated memory";
-	if(boost::filesystem::exists(heatmappath))
+	if(std::filesystem::exists(heatmappath))
 	{
 		//load from disk
 		LOG(info) << "Heatmap found";
 		
-		boost::filesystem::ifstream ifs(heatmappath);
+		std::ifstream ifs(heatmappath);
 		ifs.read(reinterpret_cast<char*>(tex.data()), tex.size()*sizeof(Vec3f));
 		ifs.close();
 	}
@@ -352,7 +356,7 @@ void SceneRenderer::generateheatmap(GatheredData& gd)
 		}
 
 		// Write map to disk
-		boost::filesystem::ofstream ofs(heatmappath);
+		std::ofstream ofs(heatmappath);
 		ofs.write(reinterpret_cast<char*>(tex.data()), tex.size()*sizeof(Vec3f));
 		ofs.close();
 	}
@@ -384,14 +388,14 @@ void SceneRenderer::generateheatmap(GatheredData& gd)
 	);
 }
 
-void SceneRenderer::loadscene(const boost::filesystem::path& path, Camera& cam)
+void SceneRenderer::loadscene(const std::filesystem::path& path, Camera& cam)
 {
-	boost::filesystem::path bin_path = 
-		boost::filesystem::change_extension(path, "bin");
+	std::filesystem::path bin_path = path;
+	bin_path.replace_extension("bin");
 	LOG(info) << path << " " << bin_path;
 
 	nlohmann::json json_data;
-	boost::filesystem::ifstream json_file{path};
+	std::ifstream json_file{path};
 	if(!json_file) 
 	{
 		LOG(fatal) <<
@@ -401,8 +405,8 @@ void SceneRenderer::loadscene(const boost::filesystem::path& path, Camera& cam)
 	json_file >> json_data;
 	json_file.close();
 
-	boost::filesystem::ifstream bin_ifs{bin_path};
-	const unsigned int bin_size = boost::filesystem::file_size(bin_path);
+	std::ifstream bin_ifs{bin_path};
+	const unsigned int bin_size = std::filesystem::file_size(bin_path);
 	std::vector<char> bin_data(bin_size);
 	bin_ifs.read(bin_data.data(), bin_size);
 

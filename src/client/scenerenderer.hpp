@@ -7,10 +7,6 @@
 #include "imgui_impl_opengl3.h"
 #include "imgui_impl_glfw.h"
 
-#include <boost/log/trivial.hpp>
-#include <boost/filesystem.hpp>
-#include <boost/filesystem/convenience.hpp>
-
 #include "utils.hpp"
 #include "camera.hpp"
 #include "gathereddata.hpp"
@@ -18,6 +14,7 @@
 #include "json.hpp"
 
 #include <thread>
+#include <filesystem>
 
 class Geometry
 {
@@ -45,7 +42,7 @@ constexpr unsigned texres = 128;
 class SceneRenderer
 {
 public:
-	void init(const boost::filesystem::path& path, Camera& cam);
+	void init(const std::filesystem::path& path, Camera& cam);
 	bool renderui(bool datasetloaded = false);
 	void render1(Camera& cam, GatheredData* gd = nullptr, bool opaque = true);
 	void render2(GLuint final_fbo);
@@ -98,7 +95,7 @@ private:
 	GLuint locid3_finaltex;
 	GLuint locid3_transparentbeauty;
 
-	void loadscene(const boost::filesystem::path& path, Camera& cam);
+	void loadscene(const std::filesystem::path& path, Camera& cam);
 	void generateopaquefbo();
 	void generatetransparentfbo();
 

@@ -1,5 +1,8 @@
 #include "application.hpp"
 
+#include <filesystem>
+#include <string>
+
 // Returns true if a modify has been committed 
 bool mouse_camera_event(
 	int btn_id,
@@ -392,7 +395,7 @@ void Application::renderui()
 	ImGui::NewFrame();
 
 	ImGui::Begin("Resource loading");
-		boost::filesystem::path cwd = boost::filesystem::current_path();
+		std::filesystem::path cwd = std::filesystem::current_path();
 		ImGui::TextWrapped("cwd: %s", cwd.c_str());
 
 		ImGui::Text("Scene:");

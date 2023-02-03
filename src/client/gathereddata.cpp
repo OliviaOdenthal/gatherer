@@ -1,19 +1,20 @@
 #include "gathereddata.hpp"
 
-void GatheredData::loadall(
-	const boost::filesystem::path& folder, 
-	const boost::filesystem::path& scenejson
-) {
-	
-	datafolder = folder;
+#include <fstream>
 
-	const boost::filesystem::path lengths_fp = 
+void GatheredData::loadall(
+	const std::filesystem::path& folder, 
+	const std::filesystem::path& scenejson
+) {
+	auto datafolder = folder;
+
+	const std::filesystem::path lengths_fp = 
 		folder / "paths" / "lengths.bin";
-	const boost::filesystem::path positions_fp = 
+	const std::filesystem::path positions_fp = 
 		folder / "bounces" / "positions.bin";
-	const boost::filesystem::path radiance_fp = 
+	const std::filesystem::path radiance_fp = 
 		folder / "paths" / "radiance.bin";
-	const boost::filesystem::path camerasamples_fp = 
+	const std::filesystem::path camerasamples_fp = 
 		folder / "paths" / "camerasamples.bin";
 
 	LOG(info) << lengths_fp;
@@ -21,13 +22,14 @@ void GatheredData::loadall(
 	LOG(info) << radiance_fp;
 	LOG(info) << camerasamples_fp;
 
-	boost::filesystem::ifstream lengths_ifs(lengths_fp);
-	boost::filesystem::ifstream positions_ifs(positions_fp);
-	boost::filesystem::ifstream radiance_ifs(radiance_fp);
-	boost::filesystem::ifstream camerasamples_ifs(camerasamples_fp);
+
+	std::ifstream lengths_ifs(lengths_fp);
+	std::ifstream positions_ifs(positions_fp);
+	std::ifstream radiance_ifs(radiance_fp);
+	std::ifstream camerasamples_ifs(camerasamples_fp);
 	
-	const unsigned lenghts_bytesize   = boost::filesystem::file_size(lengths_fp);
-	const unsigned positions_bytesize = boost::filesystem::file_size(positions_fp);
+	const unsigned lenghts_bytesize   = std::filesystem::file_size(lengths_fp);
+	const unsigned positions_bytesize = std::filesystem::file_size(positions_fp);
 
 	npaths = lenghts_bytesize / sizeof(uint8_t);
 	nbounces = positions_bytesize / sizeof(Vec3h);
@@ -55,10 +57,9 @@ void GatheredData::loadall(
 		off += l;
 	}
 
-	BOOST_LOG_TRIVIAL(info) << "Loaded all paths";
 
 	nlohmann::json json_data;
-	boost::filesystem::ifstream json_file{scenejson};
+	std::ifstream json_file{scenejson};
 	if(!json_file) 
 	{
 		LOG(fatal) <<

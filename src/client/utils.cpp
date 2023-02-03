@@ -1,5 +1,11 @@
 #include "utils.hpp"
 
+#include <fstream>
+
+void log_stdout(std::string const& msg) {
+	std::cout << msg << std::endl;
+}
+
 AABB::AABB()
 : minpt{ INFINITY,  INFINITY,  INFINITY}, 
   maxpt{-INFINITY, -INFINITY, -INFINITY} {}
@@ -35,11 +41,11 @@ float AABB::maxlength()
 }
 
 GLuint disk_load_shader(
-	const boost::filesystem::path&	path,
+	const std::filesystem::path&	path,
 	const GLenum 					type
 )
 {
-	boost::filesystem::ifstream ifs{path};
+	std::ifstream ifs{path};
 	std::string str(
 		(std::istreambuf_iterator<char>(ifs)),
         (std::istreambuf_iterator<char>())
@@ -66,10 +72,10 @@ GLuint disk_load_shader(
 }
 
 GLuint disk_load_shader_program(
-	const boost::filesystem::path& vtxsha_path,
-	const boost::filesystem::path& fragsha_path,
-	const boost::filesystem::path& tessha_path,
-	const boost::filesystem::path& geomsha_path
+	const std::filesystem::path& vtxsha_path,
+	const std::filesystem::path& fragsha_path,
+	const std::filesystem::path& tessha_path,
+	const std::filesystem::path& geomsha_path
 )
 {
 	bool tessha  = !tessha_path.empty();
