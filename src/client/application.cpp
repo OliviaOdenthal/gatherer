@@ -78,6 +78,7 @@ Application::Application()
 
 	initglfw();
 	createglfwwindow();
+	initglad();
 	
 	// Enable vsync
 	glfwSwapInterval(1);
@@ -86,7 +87,6 @@ Application::Application()
 	if (error) exit(1);
 
 	LOG("Created window");
-	initglew();
 	
 	configureogl();
 
@@ -675,14 +675,9 @@ void Application::createglfwwindow()
 	glfwSetWindowSizeCallback(window, Application::windowresize);
 }
 
-void Application::initglew()
+void Application::initglad()
 {
-	GLenum glew_init_status = glewInit();
-	if (glew_init_status != GLEW_OK)
-	{
-		const GLubyte* err = glewGetErrorString(glew_init_status);
-		LOG(error) << "GLEW: " << err;
-	}
+	gladLoadGL();
 }
 
 void Application::configureogl()

@@ -91,7 +91,7 @@ private:
 
 	void initglfw();
 	void createglfwwindow();
-	void initglew();
+	void initglad();
 	void configureogl();
 	void initimgui();
 
