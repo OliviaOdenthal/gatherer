@@ -891,6 +891,9 @@ void SceneRenderer::generateuvworldtextures()
 			glDrawArrays(GL_POINTS, geo.offset, geo.count);
 		}
 
+// https://registry.khronos.org/OpenGL/extensions/NV/NV_conservative_raster.txt
+#define GL_CONSERVATIVE_RASTERIZATION_NV 0x9346
+
 		glEnable(GL_CONSERVATIVE_RASTERIZATION_NV);
 		for(Geometry& geo : geometries)
 		{
