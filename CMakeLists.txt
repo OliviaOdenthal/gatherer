@@ -12,9 +12,6 @@ set(GATHERER_VERSION ${GATHERER_MAJOR_VERSION}.${GATHERER_MINOR_VERSION})
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
-set(CMAKE_CXX_FLAGS "-Wall -Wextra")
-set(CMAKE_CXX_FLAGS_DEBUG "-g")
-set(CMAKE_CXX_FLAGS_RELEASE "-O3")
 
 set(MATH_INCLUDE "deps/math/include")
 
@@ -33,19 +30,19 @@ set(IMGUI_SRCS
   "${IMGUI_DIR}/backends/imgui_impl_opengl3.cpp"
 )
 
-include_directories(
-  include
-  ${MATH_INCLUDE}
-  ${JSON_INCLUDE}
-  ${IMGUI_INCLUDE}
+find_package(OpenGL REQUIRED)
+add_subdirectory(deps/glad)
+set(GLAD_DIR "deps/glad")
+set(GLAD_INCLUDE
+  "${GLAD_DIR}/include/"
 )
 
-find_package(Boost COMPONENTS log filesystem REQUIRED)
-find_package(glfw3 REQUIRED)
-include(FindOpenGL)
-include(FindGLEW)
+set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
+set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
+set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
+add_subdirectory(deps/glfw)
 
-set( GATHERER_CLIENT_SOURCES 
+set(GATHERER_CLIENT_SOURCES 
   src/client/utils.cpp
   src/client/gathereddata.cpp
   src/client/imagerenderer.cpp
@@ -59,8 +56,24 @@ set( GATHERER_CLIENT_SOURCES
   src/client/client.cpp
   ${IMGUI_SRCS}
 )
-add_executable(${PROJECT_NAME}client ${GATHERER_CLIENT_SOURCES})
-target_link_libraries(${PROJECT_NAME}client glfw)
-target_link_libraries(${PROJECT_NAME}client OpenGL::GL)
-target_link_libraries(${PROJECT_NAME}client GLEW::glew)
-target_link_libraries(${PROJECT_NAME}client ${Boost_LIBRARIES})
+
+set(EXECUTABLE_CLIENT ${PROJECT_NAME}_client)
+add_executable(${EXECUTABLE_CLIENT} ${GATHERER_CLIENT_SOURCES})
+set_target_properties(${EXECUTABLE_CLIENT} PROPERTIES
+  CXX_STANDARD 17
+  CXX_EXTENSIONS OFF
+)
+target_include_directories(${EXECUTABLE_CLIENT}
+PRIVATE
+  "include/"
+  ${MATH_INCLUDE}
+  ${JSON_INCLUDE}
+  ${IMGUI_INCLUDE}
+  ${GLAD_INCLUDE}
+)
+target_link_libraries(${EXECUTABLE_CLIENT}
+PUBLIC
+  glad
+  glfw
+  OpenGL::GL
+)
