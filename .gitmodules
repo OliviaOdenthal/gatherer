@@ -7,3 +7,11 @@
 [submodule "deps/json"]
 	path = deps/json
 	url = https://github.com/nlohmann/json/
+[submodule "deps/glad"]
+	path = deps/glad
+	url = https://github.com/rtryan98/glad
+	branch = master
+[submodule "deps/glfw"]
+	path = deps/glfw
+	url = https://github.com/glfw/glfw
+	branch = 3.3-stable
