@@ -1,14 +1,9 @@
 #ifndef _WINDOWFILTER_HPP_
 #define _WINDOWFILTER_HPP_
 
+#include "utils.hpp"
 #include "math.h"
 #include "filtermanager.hpp"
-
-#include <GL/glew.h>
-#include <GLFW/glfw3.h>
-
-#include "imgui_impl_opengl3.h"
-#include "imgui_impl_glfw.h"
 
 class WindowFilter : public Filter
 {

@@ -1,5 +1,11 @@
 #include "utils.hpp"
 
+#include <fstream>
+
+void log_stdout(std::string const& msg) {
+	std::cout << msg << std::endl;
+}
+
 AABB::AABB()
 : minpt{ INFINITY,  INFINITY,  INFINITY}, 
   maxpt{-INFINITY, -INFINITY, -INFINITY} {}
@@ -35,11 +41,11 @@ float AABB::maxlength()
 }
 
 GLuint disk_load_shader(
-	const boost::filesystem::path&	path,
+	const std::filesystem::path&	path,
 	const GLenum 					type
 )
 {
-	boost::filesystem::ifstream ifs{path};
+	std::ifstream ifs{path};
 	std::string str(
 		(std::istreambuf_iterator<char>(ifs)),
         (std::istreambuf_iterator<char>())
@@ -54,22 +60,22 @@ GLuint disk_load_shader(
 	glGetShaderiv(idx, GL_COMPILE_STATUS, &compile_status);
 	if(compile_status == GL_FALSE)
 	{
-		LOG(error) << "Shader has errors!";
+		LOG("Shader has errors!");
 		char info[512];
 		glGetShaderInfoLog(idx, 512, NULL, info);
-    	LOG(error) << info;
+    	LOG(info);
 		return -1;
 	}
-	LOG(info) << "Compiled shader " << idx;
+	LOG("Compiled shader " + std::to_string(idx));
 
 	return idx;
 }
 
 GLuint disk_load_shader_program(
-	const boost::filesystem::path& vtxsha_path,
-	const boost::filesystem::path& fragsha_path,
-	const boost::filesystem::path& tessha_path,
-	const boost::filesystem::path& geomsha_path
+	const std::filesystem::path& vtxsha_path,
+	const std::filesystem::path& fragsha_path,
+	const std::filesystem::path& tessha_path,
+	const std::filesystem::path& geomsha_path
 )
 {
 	bool tessha  = !tessha_path.empty();
@@ -96,13 +102,13 @@ GLuint disk_load_shader_program(
 	glGetProgramiv(shaprog_idx, GL_LINK_STATUS, &link_status);
 	if(link_status == GL_FALSE)
 	{
-		LOG(error) << "Shader program has errors!";
+		LOG("Shader program has errors!");
 		char info[512];
 		glGetProgramInfoLog(shaprog_idx, 512, NULL, info);
-    	LOG(error) << info;
+    	LOG(info);
 		return -1;
 	}
-	LOG(info) << "Created shader program " << shaprog_idx;
+	LOG("Created shader program " + std::to_string(shaprog_idx));
 
 	glDeleteShader(vtxsha_idx);
 	glDeleteShader(fragsha_idx);
@@ -116,7 +122,7 @@ bool glfwCheckErrors()
 	int err_code = glfwGetError(&err_msg);
 	if(err_code != GLFW_NO_ERROR)
 	{
-		LOG(error) << "GLFW: " << err_msg;
+		LOG(std::string("GLFW: ") + err_msg);
 		return false;
 	}
 	return true;

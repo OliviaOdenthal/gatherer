@@ -1,5 +1,8 @@
 #include "windowfilter.hpp"
 
+#include "imgui_impl_opengl3.h"
+#include "imgui_impl_glfw.h"
+
 WindowFilter::WindowFilter(Vec3f pos, Vec3f n, Vec2f s)
 {
 	filtertypename = "Window";
@@ -154,7 +157,7 @@ void WindowFilter::computepaths(GatheredData& gd)
 		gd.selectedpaths.end()
 	);
 
-	LOG(info) << "Filtered paths (" << newnpaths << " / " << npaths << ")";
+	LOG("Filtered paths (" + std::to_string(newnpaths) + " / " + std::to_string(npaths) + ")");
 }
 
 bool WindowFilter::renderstackui()

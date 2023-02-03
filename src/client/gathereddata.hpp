@@ -9,7 +9,7 @@
 class GatheredData
 {
 public:
-	boost::filesystem::path datafolder;
+	std::filesystem::path datafolder;
 
 	Vec2i rendersize;
 	unsigned rendersamples;
@@ -28,8 +28,8 @@ public:
 	std::vector<unsigned> selectedpathstmpbuf;
 
 	void loadall(
-		const boost::filesystem::path& folder,
-		const boost::filesystem::path& scenejson
+		const std::filesystem::path& folder,
+		const std::filesystem::path& scenejson
 	);
 
 	float heatmapmax = 1;

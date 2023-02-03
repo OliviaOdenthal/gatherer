@@ -1,18 +1,48 @@
 #ifndef _UTILS_HPP_
 #define _UTILS_HPP_
 
-#include <GL/glew.h>
+#define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>
+#include <glad/glad.h>
 
-#include <boost/filesystem.hpp>
-#include <boost/log/trivial.hpp>
+#include <filesystem>
+#include <iostream>
+#include <string>
 
 #include "math.hpp"
 
 #define DEF_WINDOW_W 1024
 #define DEF_WINDOW_H 1024
 
-#define LOG BOOST_LOG_TRIVIAL
+#define LOG(X) log_stdout(X);
+
+void log_stdout(std::string const& msg);
+
+namespace std {
+	inline std::string to_string(const Vec2i& v) {
+		return std::string{"["} + std::to_string(v[0]) + ", " + std::to_string(v[1]) + "]";
+	}
+
+	inline std::string to_string(const Vec2f& v) {
+		return std::string{"["} + std::to_string(v[0]) + ", " + std::to_string(v[1]) + "]";
+	}
+
+	inline std::string to_string(const Vec2h& v) {
+		return std::string{"["} + std::to_string(v[0]) + ", " + std::to_string(v[1]) + "]";
+	}
+
+	inline std::string to_string(const Vec3i& v) {
+		return std::string{"["} + std::to_string(v[0]) + ", " + std::to_string(v[1]) + ", " + std::to_string(v[2]) + "]";
+	}
+
+	inline std::string to_string(const Vec3f& v) {
+		return std::string{"["} + std::to_string(v[0]) + ", " + std::to_string(v[1]) + ", " + std::to_string(v[2]) + "]";
+	}
+
+	inline std::string to_string(const Vec3h& v) {
+		return std::string{"["} + std::to_string(v[0]) + ", " + std::to_string(v[1]) + ", " + std::to_string(v[2]) + "]";
+	}
+}
 
 class AABB {
 public:
@@ -28,15 +58,15 @@ public:
 };
 
 GLuint disk_load_shader(
-	const boost::filesystem::path&	path,
+	const std::filesystem::path&	path,
 	const GLenum 					type
 );
 
 GLuint disk_load_shader_program(
-	const boost::filesystem::path& vtxsha_path,
-	const boost::filesystem::path& fragsha_path,
-	const boost::filesystem::path& tessha_path = "",
-	const boost::filesystem::path& geomsha_path = ""
+	const std::filesystem::path& vtxsha_path,
+	const std::filesystem::path& fragsha_path,
+	const std::filesystem::path& tessha_path = "",
+	const std::filesystem::path& geomsha_path = ""
 );
 
 bool glfwCheckErrors();

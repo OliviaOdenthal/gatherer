@@ -1,6 +1,13 @@
 #include "scenerenderer.hpp"
 
-void SceneRenderer::init(const boost::filesystem::path& path, Camera& cam)
+#include "utils.hpp"
+
+#include "imgui_impl_opengl3.h"
+#include "imgui_impl_glfw.h"
+
+#include <fstream>
+
+void SceneRenderer::init(const std::filesystem::path& path, Camera& cam)
 {
 	loadscene(path, cam);
 
@@ -269,32 +276,32 @@ void SceneRenderer::setframesize(Vec2i size)
 
 void SceneRenderer::generateheatmap(GatheredData& gd)
 {
-	boost::filesystem::path heatmappath = gd.datafolder / "heatmap.bin";
+	std::filesystem::path heatmappath = gd.datafolder / "heatmap.bin";
 	const unsigned nuv = numuvsets;
 	std::vector<Vec3f> tex(texres*texres*nuv);
-	LOG(info) << "Allocated memory";
-	if(boost::filesystem::exists(heatmappath))
+	LOG("Allocated memory");
+	if(std::filesystem::exists(heatmappath))
 	{
 		//load from disk
-		LOG(info) << "Heatmap found";
+		LOG("Heatmap found");
 		
-		boost::filesystem::ifstream ifs(heatmappath);
+		std::ifstream ifs(heatmappath);
 		ifs.read(reinterpret_cast<char*>(tex.data()), tex.size()*sizeof(Vec3f));
 		ifs.close();
 	}
 	else
 	{
-		LOG(info) << "Heatmap does not exist. Generating";
+		LOG("Heatmap does not exist. Generating");
 		// Dump texture from GPU
 		
 		glBindTexture(GL_TEXTURE_2D_ARRAY, texid_uvworld);
-		LOG(info) << "Binded texture array";
+		LOG("Binded texture array");
 		glGetTexImage(
 			GL_TEXTURE_2D_ARRAY, 0,
 			GL_RGB, GL_FLOAT,
 			tex.data()
 		);
-		LOG(info) << "Read texture array";
+		LOG("Read texture array");
 
 		const unsigned nthreads = std::thread::hardware_concurrency();
 		// Rows Per Thread
@@ -302,7 +309,7 @@ void SceneRenderer::generateheatmap(GatheredData& gd)
 		std::vector<std::thread> threads(nthreads);
 
 		const float r = 0.707106781f / uvscalefactor;
-		//LOG(info) << "SCALE FACTOR:" << r;
+		//LOG("SCALE FACTOR:" + std::to_string(r));
 		const float r2 = r*r;
 
 		for(unsigned ti = 0; ti < nthreads; ++ti)
@@ -314,7 +321,7 @@ void SceneRenderer::generateheatmap(GatheredData& gd)
 						x < (ti+1)*rpt; 
 						++x
 					) {
-						LOG(info) << "Column #" << x;
+						LOG("Column #" + std::to_string(x));
 						for(unsigned y = 0; y < nuv*texres; ++y)
 						{
 							const unsigned idx = x + y*texres;
@@ -338,7 +345,7 @@ void SceneRenderer::generateheatmap(GatheredData& gd)
 										pix[0] += 1.0f;
 									}
 								}
-								//LOG(info) << x << ", " << y << ": " << wp << " -> " << pix[0];
+								//LOG(x << ", " << y << ": " << wp << " -> " << pix[0];
 							}
 						}
 					}
@@ -352,7 +359,7 @@ void SceneRenderer::generateheatmap(GatheredData& gd)
 		}
 
 		// Write map to disk
-		boost::filesystem::ofstream ofs(heatmappath);
+		std::ofstream ofs(heatmappath);
 		ofs.write(reinterpret_cast<char*>(tex.data()), tex.size()*sizeof(Vec3f));
 		ofs.close();
 	}
@@ -364,7 +371,7 @@ void SceneRenderer::generateheatmap(GatheredData& gd)
 		for(unsigned y = 0; y < numuvsets*texres; ++y)
 		{
 			const float v = tex[x + y*texres][0];
-			//LOG(info) << "(" << x << ", " << y << "): " << v;
+			//LOG("(" << x << ", " << y << "): " << v;
 			hmm = max(hmm, v);
 		}
 	}
@@ -384,25 +391,24 @@ void SceneRenderer::generateheatmap(GatheredData& gd)
 	);
 }
 
-void SceneRenderer::loadscene(const boost::filesystem::path& path, Camera& cam)
+void SceneRenderer::loadscene(const std::filesystem::path& path, Camera& cam)
 {
-	boost::filesystem::path bin_path = 
-		boost::filesystem::change_extension(path, "bin");
-	LOG(info) << path << " " << bin_path;
+	std::filesystem::path bin_path = path;
+	bin_path.replace_extension("bin");
+	LOG(path.string() + " " + bin_path.string());
 
 	nlohmann::json json_data;
-	boost::filesystem::ifstream json_file{path};
+	std::ifstream json_file{path};
 	if(!json_file) 
 	{
-		LOG(fatal) <<
-			"Could not open \"" << path.string() << "\"";
+		LOG(std::string{"Could not open \""} + path.string() + "\"");
 		throw std::runtime_error("Could not open scene file");
 	}
 	json_file >> json_data;
 	json_file.close();
 
-	boost::filesystem::ifstream bin_ifs{bin_path};
-	const unsigned int bin_size = boost::filesystem::file_size(bin_path);
+	std::ifstream bin_ifs{bin_path};
+	const unsigned int bin_size = std::filesystem::file_size(bin_path);
 	std::vector<char> bin_data(bin_size);
 	bin_ifs.read(bin_data.data(), bin_size);
 
@@ -431,8 +437,8 @@ void SceneRenderer::loadscene(const boost::filesystem::path& path, Camera& cam)
 	}
 
 	// Generate the buffers
-	LOG(info) << "Vertices: " << nverts;
-	LOG(info) << "Indexes: " << nidxs;
+	LOG("Vertices: " + std::to_string(nverts));
+	LOG("Indexes: " + std::to_string(nidxs));
 	std::vector<Vec3f> vertices;
 	vertices.reserve(nverts);
 	std::vector<unsigned> indexes;
@@ -525,8 +531,8 @@ void SceneRenderer::loadscene(const boost::filesystem::path& path, Camera& cam)
 		finalvertices.push_back(v[2]);
 		finalvertices.push_back(uv[0]);
 		finalvertices.push_back(uv[1]);
-		//LOG(info) << v;
-		//LOG(info) << uv;
+		//LOG(v;
+		//LOG(uv;
 	}
 
 	GLuint vbo;
@@ -571,7 +577,7 @@ void SceneRenderer::loadscene(const boost::filesystem::path& path, Camera& cam)
 	cam.r = length(cam_eye - bbox.center());
 	cam.focus = cam_eye + cam.r*cam_look;
 	Vec3f sph = cartesian2spherical(cam_look);
-	LOG(info) << cam_look << " " << sph;
+	LOG(std::to_string(cam_look) + " " + std::to_string(sph));
 	cam.yaw = sph[1];
 	cam.pitch = sph[2];
 }
@@ -609,7 +615,7 @@ void SceneRenderer::generateopaquefbo()
 
 	if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
 	{
-		LOG(error) << "Opaque framebuffer is not complete!";
+		LOG("Opaque framebuffer is not complete!");
 	}
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
@@ -647,7 +653,7 @@ void SceneRenderer::generatetransparentfbo()
 
 	if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
 	{
-		LOG(error) << "Transparent framebuffer is not complete!";
+		LOG("Transparent framebuffer is not complete!");
 	}
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
@@ -681,8 +687,8 @@ unsigned squarify(
 		if(off[0] + width > texres)
 		{
 			// New row
-			//LOG(info) << "ROW (" << rowfirstti << "/" << ti - 1 << ")";
-			//LOG(info) << off[1] << " " << rowheight;
+			//LOG("ROW (" << rowfirstti << "/" << ti - 1 << ")");
+			//LOG(off[1] << " " << rowheight;
 			
 			// Check if new texture
 			if(off[1] + rowheight > (uvset+1)*texres)
@@ -691,10 +697,10 @@ unsigned squarify(
 				++uvset;
 				// Move prev row to new uv set
 				off[1] = texres*uvset + 0.5f;
-				//LOG(info) << "SET (" << uvset << "): " << off[1];
+				//LOG("SET (" << uvset << "): " << off[1];
 				for(unsigned rti = rowfirstti; rti < ti; ++rti)
 				{
-					//LOG(info) << "rti: " << rti;
+					//LOG("rti: " << rti;
 					Triangle& rt = triangles[rti];
 					rt.o[1] = off[1];
 				}
@@ -737,16 +743,16 @@ std::vector<Vec2f> SceneRenderer::generateuvmap(
 
 	for(unsigned tvi = 0; tvi < nverts; tvi += 3)
 	{
-		//LOG(info) << tvi;
-		//LOG(info) << indexes[tvi + 0];
-		//LOG(info) << indexes[tvi + 1];
-		//LOG(info) << indexes[tvi + 2];
+		//LOG(tvi;
+		//LOG(indexes[tvi + 0];
+		//LOG(indexes[tvi + 1];
+		//LOG(indexes[tvi + 2];
 		const Vec3f v0 = vertices[indexes[tvi + 0]];
 		const Vec3f v1 = vertices[indexes[tvi + 1]];
 		const Vec3f v2 = vertices[indexes[tvi + 2]];
-		//LOG(info) << v0;
-		//LOG(info) << v1;
-		//LOG(info) << v2;
+		//LOG(v0;
+		//LOG(v1;
+		//LOG(v2;
 
 		const Vec3f a = v1 - v0;
 		const Vec3f b = v2 - v0;
@@ -755,14 +761,14 @@ std::vector<Vec2f> SceneRenderer::generateuvmap(
 		const Vec3f n = normalize(cross(na, nb));
 		const Vec3f c = cross(n, na);
 
-		//LOG(info) << a;
-		//LOG(info) << c;
-		//LOG(info) << n;
+		//LOG(a;
+		//LOG(c;
+		//LOG(n;
 
 		// n contains a NaN, so degenerate triangle
 		if(length(n) != length(n))
 		{
-			//LOG(info) << "Discarded";
+			//LOG("Discarded");
 			continue;
 		}
 
@@ -806,7 +812,7 @@ std::vector<Vec2f> SceneRenderer::generateuvmap(
 		uvs[t.fvi+0] = invtexres*(t.o);
 		uvs[t.fvi+1] = invtexres*(t.o + t.v1);
 		uvs[t.fvi+2] = invtexres*(t.o + t.v2);
-		//LOG(info) << uvs[t.fvi+0] << " " << uvs[t.fvi+1] << " " << uvs[t.fvi+2];
+		//LOG(uvs[t.fvi+0] << " " << uvs[t.fvi+1] << " " << uvs[t.fvi+2];
 	}
 
 	
@@ -819,7 +825,7 @@ std::vector<Vec2f> SceneRenderer::generateuvmap(
 		ofs << "pmc.polyCreateFacet(p=[" << v0 << "," << v1 << "," << v2 << "])" << std::endl;
 	}
 	ofs.close();
-	LOG(info) << "Done outing uv map";
+	LOG("Done outing uv map");
 	
 	/*
 	std::ofstream ofs("./uvmap_raw");
@@ -871,7 +877,7 @@ void SceneRenderer::generateuvworldtextures()
 		);
 		if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
 		{
-			LOG(error) << "Heatmap framebuffer is not complete!";
+			LOG("Heatmap framebuffer is not complete!");
 		}
 
 		GLenum bufs = GL_COLOR_ATTACHMENT0;
@@ -884,6 +890,9 @@ void SceneRenderer::generateuvworldtextures()
 		{
 			glDrawArrays(GL_POINTS, geo.offset, geo.count);
 		}
+
+// https://registry.khronos.org/OpenGL/extensions/NV/NV_conservative_raster.txt
+#define GL_CONSERVATIVE_RASTERIZATION_NV 0x9346
 
 		glEnable(GL_CONSERVATIVE_RASTERIZATION_NV);
 		for(Geometry& geo : geometries)
